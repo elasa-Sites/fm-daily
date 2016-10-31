@@ -1,0 +1,135 @@
+#cp ~/app-root/data/downloads/drupal-7.43/.htaccess
+#cd ~/app-root/data/sites
+#mkdir -p  php
+mkdir -p  ~/app-root/runtime/repo/backups_fils
+mkdir -p  ~/app-root/runtime/repo/backups_fils/database/daily
+#cp ~/app-root/runtime/repo/.openshift ~/app-root/data/sites/php -R
+#cp ~/app-root/runtime/repo/.openshift ~/app-root/runtime/repo/php -R
+Now_hourly=$(date +%y-%m-%d---%H-%M)    
+Now_daily=$(date +%y-%m-%d-daily)
+
+cd ~/app-root/runtime/repo
+
+( find . -type d -name ".git" \
+  && find . -name ".gitignore" \
+  && find . -name ".gitmodules" ) | xargs rm -rf #remove git files  working
+
+git init
+
+mkdir -p  ~/app-root/runtime/repo/backups_fils/database/daily/vb-own-backup
+cd /tmp/email && rm -rf  `ls -t | awk 'NR>2'`
+mv  /tmp/email/* ~/app-root/runtime/repo/backups_fils/database/daily/vb-own-backup
+cd ~/app-root/runtime/repo/backups_fils/database/daily/vb-own-backup && rm -rf  `ls -t | awk 'NR>10'`
+
+mkdir -p  ~/app-root/runtime/repo/backups_fils/whole-site/daily
+cd ~/app-root/runtime/repo/backups_fils/whole-site/daily && rm -rf  `ls -t | awk 'NR>1'`
+rm -rf  *
+mkdir -p /tmp/whole-site
+mv ~/app-root/runtime/repo/backups_fils/whole-site/* /tmp/whole-site
+#zip -r ~/app-root/runtime/repo/backups_fils/whole-site/daily/"fm-site-$Now_hourly".zip $HOME/app-root/runtime/repo/
+mv  /tmp/whole-site/* ~/app-root/runtime/repo/backups_fils/whole-site/
+
+cd ~/app-root/runtime/repo
+git add .
+git commit -a  -m "$Now_hourly : commit"
+git config remote.origin.url https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+git remote add origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+git config remote.origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+#git remote rm origin#git pull 
+#git checkout -b radio
+#git push -u origin master
+git push -f origin master #when not pushing
+
+nohup sh -c " mysql -f -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD  fm > ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql"  > $OPENSHIFT_LOG_DIR/mysql.log /dev/null 2>&1 & 
+sleep 60m
+#mysql  -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD  fm > ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+if [ ! -s ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql ] ; then
+
+my-github zip -r    ~/app-root/runtime/repo/backups_fils/database/daily/"fm-database-$Now_hourly"-forced.zip  ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+my-github rm -rf ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+fi
+#zip -r    ~/app-root/runtime/repo/backups_fils/database/daily/"fm-database-$Now_hourly".zip  ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+#rm -rf ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+
+#find ~/app-root/runtime/repo/backups_fils/database/daily/* -mtime +10 -type f -delete
+#find ~/app-root/runtime/repo/backups_fils/database/daily/* -type f -ctime +10 -exec rm -rf {} \;
+#rm -rf `find ~/app-root/runtime/repo/backups_fils/database/daily/* -type f -mtime +10`
+cd ~/app-root/runtime/repo/backups_fils/database/daily && rm -rf  `ls -t | awk 'NR>10'`
+
+mkdir -p  ~/app-root/runtime/repo/backups_fils/whole-site/daily/
+cd ~/app-root/runtime/repo/backups_fils/whole-site/daily/ && rm -rf  `ls -t | awk 'NR>1'`
+rm -rf  *
+mkdir -p /tmp/whole-site
+mv ~/app-root/runtime/repo/backups_fils/whole-site/* /tmp/whole-site
+#zip -r ~/app-root/runtime/repo/backups_fils/whole-site/daily/"fm-site-$Now_hourly".zip $HOME/app-root/runtime/repo/
+mv  /tmp/whole-site/* ~/app-root/runtime/repo/backups_fils/whole-site/
+
+cd ~/app-root/runtime/repo
+git add .
+#cd ~/app-root/data/sites
+# git --work-tree=/ add ~/app-root/runtime/repo/* -f # multiple folder
+git add fm-site.zip
+git config --global user.name "soheilpaper"
+git config --global user.email soheil_paper@yahoo.com
+ #git commit --amend --reset-author
+ 
+Now_hourly=$(date +%y-%m-%d---%H:%M)    
+Now_daily=$(date +%y-%m-%d-daily)    
+echo "$Now_hourly"
+echo "$Now_daily"
+echo "$Now_daily: commit"
+echo "# openshift-test : $Now_hourly " >> README.md
+git add README.md
+git commit -a  -m "$Now_hourly : commit"
+#
+git config remote.origin.url https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+git remote add origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+
+git config remote.origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+#git remote rm origin#git pull 
+#git checkout -b radio
+#git push -u origin master
+git push -f origin master #when not pushing
+
+
+cd ~/app-root/runtime/repo
+
+
+
+nohup sh -c " mysql -f -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD  fm > ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql"  > $OPENSHIFT_LOG_DIR/mysql.log /dev/null 2>&1 & 
+sleep 60m
+mysql  -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD  fm > ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+
+if [ ! -s ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql ] ; then
+  rm ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+  mysql -f -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD  fm > ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+  zip -r    ~/app-root/runtime/repo/backups_fils/database/daily/"fm-database-$Now_hourly"-forced.zip  ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+  rm -rf ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+else
+  zip -r    ~/app-root/runtime/repo/backups_fils/database/daily/"fm-database-$Now_hourly"-forced.zip  ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+  rm -rf ~/app-root/runtime/repo/backups_fils/database/daily/fm-database-forced.sql
+fi
+if [ ! -s ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql ] ; then
+
+my-github zip -r    ~/app-root/runtime/repo/backups_fils/database/daily/"fm-database-$Now_hourly".zip  ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+my-github rm -rf ~/app-root/runtime/repo/backups_fils/database/daily/fm-database.sql
+fi
+#find ~/app-root/runtime/repo/backups_fils/database/daily/* -mtime +10 -type f -delete
+#find ~/app-root/runtime/repo/backups_fils/database/daily/* -type f -ctime +10 -exec rm -rf {} \;
+#rm -rf `find ~/app-root/runtime/repo/backups_fils/database/daily/* -type f -mtime +10`
+cd ~/app-root/runtime/repo/backups_fils/database/daily && rm -rf  `ls -t | awk 'NR>10'`
+
+cd ~/app-root/runtime/repo
+
+git add .
+git commit -a  -m "$Now_hourly : commit"
+#
+git config remote.origin.url https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+git remote add origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+
+git config remote.origin https://soheilpaper:ss123456@github.com/elasa-Sites/fm-daily.git
+#git remote rm origin#git pull 
+#git checkout -b radio
+#git push -u origin master
+git push -f origin master #when not pushing
+

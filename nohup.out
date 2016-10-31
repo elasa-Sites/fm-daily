@@ -1,0 +1,2 @@
+-f: /var/lib/openshift/58165d342d527158680001b0//ap: No such file or directory
+ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (2)
