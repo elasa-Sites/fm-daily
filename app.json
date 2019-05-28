@@ -1,0 +1,63 @@
+
+
+{
+  "name": "ss-fm Sample",
+  "description": "A barebones ss-fm app using php",
+  "repository": "https://github.com/elasa-Sites/fm-daily",
+
+
+
+
+
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-php"
+    },
+    {
+      "url": "heroku/php"
+    }
+  ]
+,
+
+
+  "description": "This app is fot forum building."
+,
+
+
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "WEB_CONCURRENCY": {
+      "description": "The number of processes to run.",
+      "value": "5"
+    },
+    "DB_NAME": {
+            "value":    "@wordpress_db_name"},
+    "DB_USER": { "value": "@wordpress_db_user"},
+    "DB_PASSWORD": { "value": "@wordpress_db_password"},
+    "DB_HOST": { "value": "@wordpress_db_host"}
+  }
+,
+
+
+
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "standard-1X"
+    }
+  }
+,
+
+
+  "name": "gsh "
+,
+
+
+  "repository": "https://github.com/elasa-Sites/fm-daily"
+}
+
+
+
